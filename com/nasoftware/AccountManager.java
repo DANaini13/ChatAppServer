@@ -10,33 +10,32 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class AccountManager{
     static public PersonSet accountSet = new PersonSet();
-    static public Lock lock = new ReentrantLock();
     static public boolean logIn(String email, String password)
     {
-        lock.lock();
+        LockHolder.lock.lock();
         Person logInPerson = new Person(email, password, "");
         if(accountSet.FindMatch(logInPerson))
         {
-            lock.unlock();
+            LockHolder.lock.unlock();
             return true;
         }
-        lock.unlock();
+        LockHolder.lock.unlock();
         return false;
     }
 
     static public boolean signUp(String email, String password, String name)
     {
-        lock.lock();
+        LockHolder.lock.lock();
         boolean result =  accountSet.addPerson(email, password, name);
-        lock.unlock();
+        LockHolder.lock.unlock();
         return result;
     }
 
     static String getInfo()
     {
-        lock.lock();
+        LockHolder.lock.lock();
         String result =  accountSet.toString();
-        lock.unlock();
+        LockHolder.lock.unlock();
         return result;
     }
 
@@ -46,17 +45,17 @@ class MessageManager
 {
     static public boolean sendMessageTo(String fromEmail, String toEmail, String message)
     {
-        AccountManager.lock.lock();
+        LockHolder.lock.lock();
         boolean result = AccountManager.accountSet.sendMessage(fromEmail, toEmail, message);
-        AccountManager.lock.unlock();
+        LockHolder.lock.unlock();
         return result;
     }
 
     static String getInfo()
     {
-        AccountManager.lock.lock();
+        LockHolder.lock.lock();
         String result =  AccountManager.accountSet.getConversion();
-        AccountManager.lock.unlock();
+       	LockHolder.lock.unlock();
         return result;
     }
 
@@ -66,9 +65,13 @@ class FriendManager
 {
     static public boolean addFriend(String fromEmail, String toEmail)
     {
-        AccountManager.lock.lock();
+        LockHolder.lock.lock();
         boolean result = AccountManager.accountSet.addFriend(fromEmail, toEmail);
-        AccountManager.lock.unlock();
+        LockHolder.lock.unlock();
         return result;
     }
+}
+
+class LockHolder {
+    static public Lock lock = new ReentrantLock();
 }
