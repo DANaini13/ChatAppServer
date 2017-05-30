@@ -44,7 +44,7 @@ public class Server extends Thread {
             } catch (SocketTimeoutException e) {
 //                System.out.println("port " + serverSocket.getLocalPort() + " time out!");
             } catch (IOException e) {
-
+                e.printStackTrace();
             }
         }
     }
@@ -101,7 +101,8 @@ class Executor extends Thread
                 int result = executeInstruction(instruction);
                 returnMessages(result);
             } catch (IOException e) {
-        //        e.printStackTrace();
+                //e.printStackTrace();
+                break;
             }
         }
     }

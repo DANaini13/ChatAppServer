@@ -7,6 +7,11 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 	// write your code here
+        /*
+        args = new String[2];
+        args[0] = "8";
+        args[1] = "22000";
+        */
         if(args.length <= 1)
         {
             System.out.println("no enough arguments!");
@@ -19,6 +24,6 @@ public class Main {
         }
         ServerManager serverManager = new ServerManager(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         serverManager.runServers();
-
+        InnerViewerManager.startInnerView();
     }
 }
