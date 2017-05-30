@@ -19,5 +19,6 @@ public class Main {
         }
         ServerManager serverManager = new ServerManager(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         serverManager.runServers();
+
     }
 }

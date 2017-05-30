@@ -1,7 +1,5 @@
 package com.nasoftware;
 
-import java.util.concurrent.ConcurrentLinkedDeque;
-
 /**
  * Created by zeyongshan on 5/25/17.
  */
@@ -44,15 +42,16 @@ class Account
 class Person extends Account
 {
     public int test = 0;
-    private ConversionList conversions;
+    private ConversationList conversation;
     private ConcurrentList<Person> friends;
     private String name;
+
 
     public Person(String email, String password, String name)
     {
         super(email, password);
         this.name = name;
-        conversions = new ConversionList();
+        conversation = new ConversationList();
         friends = new ConcurrentList<Person>();
     }
 
@@ -64,25 +63,44 @@ class Person extends Account
         return true;
     }
 
-    public boolean sendMessageTo(Person to, String message)
+    public boolean containsFriend(String email)
     {
-        if(!friends.contains(to))
-            return false;
-        conversions.addConversion(to.email, to.name);
-        return conversions.addMessageTo(to.email,  message, to.name);
+        Person p = new Person(email, "", "");
+        return friends.contains(p);
     }
 
-    public boolean sendMessageToSelf(Person to, String message)
+    public boolean addMessageToConversation(Person sender, String message)
     {
-        if(!friends.contains(to))
-            return false;
-        conversions.addConversion(to.email, to.name);
-        return conversions.addMessageTo(to.email,  message, this.name);
+        conversation.addConversion(sender.email, sender.name);
+        return conversation.addMessage(sender.email, message, sender.name, false);
     }
 
-    public String getConversion()
+    public boolean addMessageToSelf(Person receiver, String message)
     {
-        return conversions.toString();
+        conversation.addConversion(receiver.email, receiver.name);
+        return conversation.addMessage(receiver.email, message, this.name, true);
+    }
+
+    public String getConversation()
+    {
+        return conversation.toString();
+    }
+
+    public String[] getUnreadMessages() {
+        String result = "";
+        Boolean first = true;
+        for (Person x : friends)
+        {
+            if(first) {
+                result += conversation.getUnread(x.email);
+                first = false;
+            }
+            else
+                result += "-" + conversation.getUnread(x.email);
+        }
+        if(result.length() == 0)
+            return null;
+        return result.split("-");
     }
 
 }
@@ -128,10 +146,10 @@ public class PersonSet {
         Person p2 = this.retrieve(to);
         if(p2 == null)
             return false;
-        boolean result =  p1.sendMessageTo(p2, message);
+        boolean result = p1.addMessageToSelf(p2, message);
         if(!result)
             return false;
-        return p2.sendMessageToSelf(p1, message);
+        return p2.addMessageToConversation(p1, message);
     }
 
     public boolean addFriend(String from, String to)
@@ -151,7 +169,7 @@ public class PersonSet {
         for(Person x:people)
         {
             sum += x + "\n";
-            sum +=x.getConversion() + "\n";
+            sum +=x.getConversation() + "\n";
         }
         return sum;
     }
@@ -164,6 +182,14 @@ public class PersonSet {
            sum += x + "\n";
         }
         return sum;
+    }
+
+    public String[] getUnreadMessages(String email)
+    {
+        Person p1 = this.retrieve(email);
+        if(p1 == null)
+            return null;
+        return p1.getUnreadMessages();
     }
 }
 
