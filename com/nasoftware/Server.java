@@ -78,6 +78,8 @@ class Executor extends Thread
     private DataInputStream in;
     private DataOutputStream out;
     private Socket server;
+    private boolean logInStatus;
+    private String currentAccount;
 
     public Executor(DataInputStream in, DataOutputStream out, Socket server)
     {
@@ -90,6 +92,7 @@ class Executor extends Thread
         this.in = in;
         this.out = out;
         this.server = server;
+        this.logInStatus = false;
     }
 
     public void run()
@@ -136,18 +139,26 @@ class Executor extends Thread
                 result = AccountManager.signUp(parts[1], parts[2], parts[3]);
                 if(!result)
                     return -1 * instruct;
+                this.logInStatus = true;
+                this.currentAccount = parts[1];
                 break;
             case 2:
                 result = AccountManager.logIn(parts[1], parts[2]);
                 if(!result)
                     return -1 * instruct;
+                this.logInStatus = true;
+                this.currentAccount = parts[1];
                 break;
             case 3:
+                if(!logInStatus||!currentAccount.equals(parts[1]))
+                    return -1 * instruct;
                 result = FriendManager.addFriend(parts[1], parts[2]);
                 if(!result)
                     return -1 * instruct;
                 break;
             case 4:
+                if(!logInStatus||!currentAccount.equals(parts[1]))
+                    return -1 * instruct;
                 result = MessageManager.sendMessageTo(parts[1], parts[2], parts[3]);
                 if(!result)
                     return -1 * instruct;
