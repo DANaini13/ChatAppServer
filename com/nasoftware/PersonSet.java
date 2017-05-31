@@ -91,14 +91,15 @@ class Person extends Account
         Boolean first = true;
         for (Person x : friends)
         {
-            if(first) {
-                result += conversation.getUnread(x.email);
+            String temp = conversation.getUnread(x.email);
+            if(first&&temp!=null) {
                 first = false;
+                result += temp;
             }
-            else
-                result += "-" + conversation.getUnread(x.email);
+            else if(temp!=null)
+                result += "-" + temp;
         }
-        if(result.length() == 0)
+        if(result == null)
             return null;
         return result.split("-");
     }

@@ -21,7 +21,7 @@ public class ServerManager extends Thread {
     {
         serverSocket = new ServerSocket(port);
         serverSocket.setSoTimeout(10000);
-        password = "password";
+        password = "BIANhao5213";
     }
 
     public void run() {
@@ -51,33 +51,6 @@ public class ServerManager extends Thread {
 }
 
 
-class MessageSender extends Thread
-{
-    private DataOutputStream out;
-    private String email;
-
-    public MessageSender(DataOutputStream out, String email)
-    {
-        this.out = out;
-        this.email = email;
-    }
-
-    public void run()
-    {
-        while (true)
-        {
-            try {
-                String[] temp = MessageManager.getUnreadMessages(email);
-                for (String x:temp)
-                    out.writeUTF("5-" + x);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-}
-
-
 class Executor extends Thread
 {
     private int[] instructionMap;
@@ -89,12 +62,13 @@ class Executor extends Thread
 
     public Executor(DataInputStream in, DataOutputStream out)
     {
-        instructionMap = new int[5];
+        instructionMap = new int[6];
         instructionMap[0] = 0;
         instructionMap[1] = 3;
         instructionMap[2] = 2;
         instructionMap[3] = 2;
         instructionMap[4] = 3;
+        instructionMap[5] = 1;
         this.in = in;
         this.out = out;
         this.logInStatus = false;
@@ -116,15 +90,12 @@ class Executor extends Thread
                 if(logInStatus && !senderStarted)
                 {
                     senderStarted = false;
-                    MessageSender messageSender = new MessageSender(out, currentAccount);
-                    messageSender.start();
                 }
             }
         }
     }
 
-    private int executeInstruction(String instruction)
-    {
+    private int executeInstruction(String instruction) throws IOException {
         String[] parts = instruction.split("-");
         Integer instruct = Integer.parseInt(parts[0]);
         if(instruct == null)
@@ -166,6 +137,21 @@ class Executor extends Thread
                 if(!result)
                     return -1 * instruct;
                 break;
+            case 5:
+                System.out.println("case 5");
+                if(!logInStatus||!currentAccount.equals(parts[1]))
+                    return -1 * instruct;
+                String[] messages = MessageManager.getUnreadMessages(parts[1]);
+                if(messages != null)
+                {
+                    for(String x: messages) {
+                        out.writeUTF("5-" + x);
+                        System.out.println("sent :" + x);
+                    }
+                    return 100;
+                }
+                System.out.println("unread message is empty!");
+                return -1 * instruct;
             default: return 0;
         }
         return instruct;
@@ -181,10 +167,10 @@ class Executor extends Thread
                 case 1: case 2: case 3: case 4:
                     out.writeUTF(errorCode + "-1");
 			        break;
-                case -1: case -2: case -3: case -4:
+                case -1: case -2: case -3: case -4: case -5:
                     out.writeUTF(errorCode*(-1) + "-0");
 			        break;
-                default: throw new IOException();
+                default: break;
             }
         } catch (IOException e){
          //   e.printStackTrace();
@@ -201,6 +187,7 @@ Stream explanation (In):
     LogIn:      2       2 Content
     AddFriend   3       2 Content
     SendMessage 4       3 Content
+    GetMessages 5       1 Content
 */
 
 /*
