@@ -51,6 +51,14 @@ class MessageManager
         return result;
     }
 
+    static public String[] getUnreadMessages(String email)
+    {
+        LockHolder.lock.lock();
+        String[] result = AccountManager.accountSet.getUnreadMessages(email);
+        LockHolder.lock.unlock();
+        return result;
+    }
+
     static String getInfo()
     {
         LockHolder.lock.lock();
