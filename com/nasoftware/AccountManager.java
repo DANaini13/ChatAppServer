@@ -56,6 +56,8 @@ class MessageManager
         LockHolder.lock.lock();
         String[] result = AccountManager.accountSet.getUnreadMessages(email);
         LockHolder.lock.unlock();
+        if(result[0].equals(""))
+            return null;
         return result;
     }
 
