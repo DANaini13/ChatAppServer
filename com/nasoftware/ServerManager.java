@@ -138,19 +138,15 @@ class Executor extends Thread
                     return -1 * instruct;
                 break;
             case 5:
-                System.out.println("case 5");
                 if(!logInStatus||!currentAccount.equals(parts[1]))
                     return -1 * instruct;
                 String[] messages = MessageManager.getUnreadMessages(parts[1]);
                 if(messages != null)
                 {
-                    for(String x: messages) {
+                    for(String x: messages)
                         out.writeUTF("5-" + x);
-                        System.out.println("sent :" + x);
-                    }
                     return 100;
                 }
-                System.out.println("unread message is empty!");
                 return -1 * instruct;
             default: return 0;
         }
