@@ -11,3 +11,5 @@ The ChatAppServer provieds serveral functions:
 # Using guide
 
 Using with the ChatAppClinet code to use this server code.
+A specific example codes for Client canbe download at:
+https://github.com/DANaini13/ChatAppExampleCode

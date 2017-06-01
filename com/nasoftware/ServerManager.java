@@ -21,7 +21,8 @@ public class ServerManager extends Thread {
     {
         serverSocket = new ServerSocket(port);
         serverSocket.setSoTimeout(10000);
-        password = "BIANhao5213";
+        password = "password";
+	// modify the password here to change password, remember also change the password in Client
     }
 
     public void run() {
